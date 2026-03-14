@@ -4,7 +4,7 @@ import { motion, type Variants } from "framer-motion";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
-import { Check } from "lucide-react";
+import { Check, SlidersHorizontal, Music2, Building2 } from "lucide-react";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 28 },
@@ -94,12 +94,12 @@ export default function Home() {
 
           <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} className="grid md:grid-cols-3 gap-6">
             {[
-              { emoji: "🎚️", title: "FOH Engineers", tag: "Your Mix. Supercharged.", body: "Murphy is your co-pilot at the console — faster setup, smarter starting points, real-time AI backing your every call. You stay in control. Murphy makes you faster.", href: "/products" },
-              { emoji: "🎸", title: "Bands & Touring Acts", tag: "Bring Your Sound Everywhere.", body: "Tired of house engineers who don't know your show? Murphy knows your inputs, your preferences, your mix — and travels with you. Every stage sounds like home.", href: "/products" },
-              { emoji: "🏟️", title: "Venues", tag: "Great Sound. Every Night.", body: "Engineer shortage? Staff turnover? Murphy installs in your house system and makes every operator capable from day one. Consistent sound. Every show. No excuses.", href: "/products" },
-            ].map(({ emoji, title, tag, body, href }) => (
+              { icon: "foh", title: "FOH Engineers", tag: "Your Mix. Supercharged.", body: "Murphy is your co-pilot at the console — faster setup, smarter starting points, real-time AI backing your every call. You stay in control. Murphy makes you faster.", href: "/products" },
+              { icon: "bands", title: "Bands & Touring Acts", tag: "Bring Your Sound Everywhere.", body: "Tired of house engineers who don't know your show? Murphy knows your inputs, your preferences, your mix — and travels with you. Every stage sounds like home.", href: "/products" },
+              { icon: "venues", title: "Venues", tag: "Great Sound. Every Night.", body: "Engineer shortage? Staff turnover? Murphy installs in your house system and makes every operator capable from day one. Consistent sound. Every show. No excuses.", href: "/products" },
+            ].map(({ icon, title, tag, body, href }) => (
               <motion.div key={title} variants={fadeUp} className="rounded-2xl p-8 border border-white/10 bg-white/[0.03] hover:border-[#7b5cf6]/40 hover:bg-white/[0.05] transition-all duration-300 group">
-                <div className="text-3xl mb-5">{emoji}</div>
+                <div className="w-10 h-10 mb-5 rounded-lg flex items-center justify-center" style={{background:"rgba(123,92,246,0.15)"}}>{icon === "foh" ? <SlidersHorizontal className="w-5 h-5 text-[#7b5cf6]" /> : icon === "bands" ? <Music2 className="w-5 h-5 text-[#7b5cf6]" /> : <Building2 className="w-5 h-5 text-[#7b5cf6]" />}</div>
                 <h3 className="text-xl font-bold text-[#f0f0f5] mb-1">{title}</h3>
                 <p className="text-sm font-semibold text-[#7b5cf6] mb-4">{tag}</p>
                 <p className="text-[#8a8a9a] text-sm leading-relaxed mb-6">{body}</p>
