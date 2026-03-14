@@ -9,7 +9,7 @@ export default function Investors() {
   return (
     <>
       <Nav />
-      <section className="relative flex flex-col items-center justify-center text-center px-6 pt-28 pb-20 overflow-hidden">
+      <section className="relative flex flex-col items-center justify-center text-center px-6 pt-32 pb-20 overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(123,92,246,0.12)_0%,transparent_70%)]" />
         <div className="relative z-10 max-w-3xl">
           <TrendingUp className="w-10 h-10 mx-auto mb-6 text-[#7b5cf6]" />

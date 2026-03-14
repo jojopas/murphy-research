@@ -1,41 +1,71 @@
 "use client";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const links = [
-  { href: "/how-it-works", label: "How It Works" },
-  { href: "/products", label: "Products" },
-  { href: "/about", label: "About" },
-  { href: "/investors", label: "Investors" },
+const navLinks = [
+  { label: "How It Works", href: "/how-it-works" },
+  { label: "Products", href: "/products" },
+  { label: "About", href: "/about" },
+  { label: "Investors", href: "/investors" },
 ];
 
 export default function Nav() {
+  const [open, setOpen] = useState(false);
   const path = usePathname();
+
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#0a0a0f]/80 backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5">
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/70 border-b border-white/10">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
           <img src="/murphy-avatar.png" alt="Murphy" className="w-8 h-8 rounded-full object-cover" />
-          <span className="font-bold text-lg tracking-tight text-[#f0f0f5]">Murphy</span>
+          <span className="text-[#f0f0f5] font-bold text-lg tracking-tight">Murphy<span className="text-[#7b5cf6]">AI</span></span>
         </Link>
-        <div className="hidden md:flex items-center gap-7 text-sm">
-          {links.map(({ href, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`transition-colors ${path === href ? "text-[#f0f0f5] font-medium" : "text-[#8a8a9a] hover:text-[#f0f0f5]"}`}
-            >
+
+        {/* Desktop links */}
+        <ul className="hidden lg:flex items-center gap-7 text-sm text-[#8a8a9a]">
+          {navLinks.map(({ label, href }) => (
+            <li key={href}>
+              <Link href={href} className={`transition-colors duration-150 hover:text-[#f0f0f5] ${path === href ? "text-[#f0f0f5] font-medium" : ""}`}>
+                {label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        {/* CTA + hamburger */}
+        <div className="flex items-center gap-3">
+          <Link
+            href="/contact"
+            className="hidden sm:inline-flex items-center px-4 py-2 rounded-lg bg-[#7b5cf6] text-white font-semibold text-sm hover:bg-[#6d4fe0] transition-colors shadow-[0_0_20px_rgba(123,92,246,0.30)]"
+          >
+            Hire Murphy
+          </Link>
+          <button
+            className="lg:hidden text-[#f0f0f5] p-1"
+            onClick={() => setOpen(!open)}
+            aria-label="Toggle menu"
+          >
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile menu */}
+      {open && (
+        <div className="lg:hidden bg-[#0a0a0f]/95 backdrop-blur-md border-t border-white/10 px-4 py-4 flex flex-col gap-3">
+          {navLinks.map(({ label, href }) => (
+            <Link key={href} href={href} className="py-2 text-sm text-[#8a8a9a] hover:text-[#f0f0f5] transition-colors" onClick={() => setOpen(false)}>
               {label}
             </Link>
           ))}
+          <Link href="/contact" className="mt-2 inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-[#7b5cf6] text-white font-semibold text-sm hover:bg-[#6d4fe0] transition-colors" onClick={() => setOpen(false)}>
+            Hire Murphy
+          </Link>
         </div>
-        <Link
-          href="/contact"
-          className="inline-flex items-center justify-center px-5 py-2 rounded-lg bg-[#7b5cf6] text-white font-semibold text-sm hover:bg-[#6d4fe0] transition-colors shadow-[0_0_20px_rgba(123,92,246,0.35)]"
-        >
-          Hire Murphy
-        </Link>
-      </div>
-    </nav>
+      )}
+    </header>
   );
 }

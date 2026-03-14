@@ -8,7 +8,7 @@ export default function About() {
   return (
     <>
       <Nav />
-      <section className="relative flex flex-col items-center justify-center text-center px-6 pt-28 pb-20 overflow-hidden">
+      <section className="relative flex flex-col items-center justify-center text-center px-6 pt-32 pb-20 overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(123,92,246,0.12)_0%,transparent_70%)]" />
         <div className="relative z-10 max-w-3xl">
           <p className="text-xs font-semibold tracking-[0.15em] uppercase text-[#8a8a9a] mb-4">The story</p>
