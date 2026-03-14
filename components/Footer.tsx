@@ -14,11 +14,10 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div>
-            <Link href="/" className="flex items-center gap-2.5">
-              <img src="/murphy-avatar.png" alt="Murphy" className="w-7 h-7 rounded-full object-cover" />
-              <span className="text-[#f0f0f5] font-bold text-lg tracking-tight">Murphy<span className="text-[#7b5cf6]">AI</span></span>
+            <Link href="/">
+              <img src="/murphy-logo.jpg" alt="Murphy AI" className="h-8 w-auto object-contain mb-2" />
             </Link>
-            <p className="text-[#8a8a9a] text-sm mt-1">AI you can trust. Sound you can hear.</p>
+            <p className="text-[#8a8a9a] text-sm">AI you can trust. Sound you can hear.</p>
           </div>
           <nav className="flex flex-wrap gap-x-6 gap-y-2">
             {footerLinks.map(({ label, href }) => (
