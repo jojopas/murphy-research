@@ -6,7 +6,7 @@ export default function Investors() {
   return (
     <main className="min-h-screen" style={{ background: "#0a0a0f", color: "#e5e7eb" }}>
       <nav className="flex items-center justify-between px-8 py-6 border-b" style={{ borderColor: "#1f2937" }}>
-        <Link href="/" className="flex items-center gap-2"><span className="text-2xl">🐾</span><span className="font-bold text-xl tracking-tight">Murphy</span></Link>
+        <Link href="/" className="flex items-center gap-2"><img src="/murphy-avatar.png" alt="Murphy" className="w-8 h-8 rounded-full object-cover" /><span className="font-bold text-xl tracking-tight">Murphy</span></Link>
         <div className="hidden md:flex items-center gap-8 text-sm" style={{ color: "#9ca3af" }}>
           <Link href="/products" className="hover:text-white transition-colors">Products</Link>
           <Link href="/how-it-works" className="hover:text-white transition-colors">How It Works</Link>

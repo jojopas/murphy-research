@@ -9,7 +9,7 @@ export default function Home() {
       {/* Nav */}
       <nav className="flex items-center justify-between px-8 py-6 border-b" style={{ borderColor: "#1f2937" }}>
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-2xl">🐾</span>
+          <img src="/murphy-avatar.png" alt="Murphy" className="w-8 h-8 rounded-full object-cover" />
           <span className="font-bold text-xl tracking-tight">Murphy</span>
         </Link>
         <div className="hidden md:flex items-center gap-8 text-sm" style={{ color: "#9ca3af" }}>
@@ -28,7 +28,7 @@ export default function Home() {
 
       {/* Hero */}
       <section className="flex flex-col items-center text-center px-6 pt-24 pb-20">
-        <div className="mb-8 text-9xl select-none">🐶</div>
+        <img src="/murphy-avatar.png" alt="Murphy AI" className="mb-8 w-48 h-48 mx-auto rounded-full object-cover" style={{ boxShadow: "0 0 60px #7b5cf640" }} />
         {/* TODO: Replace with Murphy avatar image */}
         <h1 className="text-5xl md:text-7xl font-black tracking-tight mb-4 leading-none">
           Meet Murphy.
