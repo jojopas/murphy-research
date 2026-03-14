@@ -23,41 +23,59 @@ export default function Home() {
       <Nav />
 
       {/* ── Hero ── */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-24 pb-24 overflow-hidden">
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_30%,rgba(123,92,246,0.14)_0%,transparent_70%)]" />
+      <section className="relative min-h-screen flex items-center px-6 pt-24 pb-16 overflow-hidden">
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_30%_40%,rgba(123,92,246,0.12)_0%,transparent_70%)]" />
         <div aria-hidden className="pointer-events-none absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#0a0a0f] to-transparent" />
 
-        <motion.div variants={stagger} initial="hidden" animate="visible" className="relative z-10 max-w-4xl mx-auto">
-          <motion.div variants={fadeUp}>
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-[#7b5cf6]/15 text-[#c4b5fd] border border-[#7b5cf6]/30 mb-8 tracking-wide uppercase">
-              🏆 World&apos;s First AI-Assisted FOH Mixer
-            </span>
+        <div className="relative z-10 max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left — copy */}
+          <motion.div variants={stagger} initial="hidden" animate="visible">
+            <motion.div variants={fadeUp}>
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-[#7b5cf6]/15 text-[#c4b5fd] border border-[#7b5cf6]/30 mb-8 tracking-wide uppercase">
+                🏆 World&apos;s First AI-Assisted FOH Mixer
+              </span>
+            </motion.div>
+
+            <motion.h1 variants={fadeUp} className="text-[clamp(44px,7vw,84px)] font-black leading-[1.01] tracking-[-0.04em] text-[#f0f0f5] mb-5">
+              Meet Murphy.
+            </motion.h1>
+
+            <motion.p variants={fadeUp} className="text-[clamp(18px,2vw,24px)] font-semibold text-[#7b5cf6] mb-6 tracking-tight">
+              Man&apos;s best friend. Now at the console.
+            </motion.p>
+
+            <motion.p variants={fadeUp} className="text-lg text-[#8a8a9a] mb-3 leading-relaxed max-w-lg">
+              Murphy is your AI production companion — configuring your console, balancing your mix, and learning every venue it plays.
+            </motion.p>
+            <motion.p variants={fadeUp} className="text-sm font-medium text-[#f59e0b] mb-10">
+              Built on 400+ real shows. Always listening. Never complaining.
+            </motion.p>
+
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4">
+              <Link href="/contact" className="inline-flex items-center justify-center px-8 py-3.5 rounded-lg bg-[#7b5cf6] text-white font-semibold text-base hover:bg-[#6d4fe0] transition-colors shadow-[0_0_24px_rgba(123,92,246,0.40)]">
+                Hire Murphy →
+              </Link>
+              <Link href="/how-it-works" className="inline-flex items-center justify-center px-8 py-3.5 rounded-lg border border-white/20 text-[#f0f0f5] font-semibold text-base hover:bg-white/8 transition-colors">
+                See How It Works
+              </Link>
+            </motion.div>
           </motion.div>
 
-          <motion.h1 variants={fadeUp} className="text-[clamp(48px,9vw,96px)] font-black leading-[1.01] tracking-[-0.04em] text-[#f0f0f5] mb-5">
-            Meet Murphy.
-          </motion.h1>
-
-          <motion.p variants={fadeUp} className="text-[clamp(18px,2.5vw,26px)] font-semibold text-[#7b5cf6] mb-7 tracking-tight">
-            Man&apos;s best friend. Now at the console.
-          </motion.p>
-
-          <motion.p variants={fadeUp} className="text-lg sm:text-xl text-[#8a8a9a] max-w-2xl mx-auto mb-3 leading-relaxed">
-            Murphy is your AI production companion — configuring your console, balancing your mix, and learning every venue it plays.
-          </motion.p>
-          <motion.p variants={fadeUp} className="text-sm font-medium text-[#f59e0b] mb-11">
-            Built on 400+ real shows. Always listening. Never complaining.
-          </motion.p>
-
-          <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/contact" className="inline-flex items-center justify-center px-8 py-3.5 rounded-lg bg-[#7b5cf6] text-white font-semibold text-base hover:bg-[#6d4fe0] transition-colors shadow-[0_0_24px_rgba(123,92,246,0.40)]">
-              Hire Murphy →
-            </Link>
-            <Link href="/how-it-works" className="inline-flex items-center justify-center px-8 py-3.5 rounded-lg border border-white/20 text-[#f0f0f5] font-semibold text-base hover:bg-white/8 transition-colors">
-              See How It Works
-            </Link>
+          {/* Right — hardware photo */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="relative flex items-center justify-center"
+          >
+            <div className="absolute inset-0 rounded-3xl bg-[radial-gradient(ellipse_at_center,rgba(123,92,246,0.15)_0%,transparent_70%)] blur-2xl" />
+            <img
+              src="/murphy-hero.png"
+              alt="Murphy — AI production intelligence hardware on a mixing console"
+              className="relative z-10 w-full max-w-lg rounded-2xl object-cover shadow-[0_0_80px_rgba(123,92,246,0.25)]"
+            />
           </motion.div>
-        </motion.div>
+        </div>
       </section>
 
       {/* ── Stats strip ── */}
