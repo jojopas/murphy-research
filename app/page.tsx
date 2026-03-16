@@ -22,60 +22,53 @@ export default function Home() {
     <>
       <Nav />
 
-      {/* ── Hero ── */}
-      <section className="relative min-h-screen flex items-center px-6 pt-24 pb-16 overflow-hidden">
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_30%_40%,rgba(123,92,246,0.12)_0%,transparent_70%)]" />
-        <div aria-hidden className="pointer-events-none absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#0a0a0f] to-transparent" />
-
-        <div className="relative z-10 max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left — copy */}
-          <motion.div variants={stagger} initial="hidden" animate="visible">
-            <motion.div variants={fadeUp}>
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-[#7b5cf6]/15 text-[#c4b5fd] border border-[#7b5cf6]/30 mb-8 tracking-wide uppercase">
-                🏆 World&apos;s First AI-Assisted FOH Mixer
-              </span>
-            </motion.div>
-
-            <motion.h1 variants={fadeUp} className="text-[clamp(44px,7vw,84px)] font-black leading-[1.01] tracking-[-0.04em] text-[#f0f0f5] mb-5">
-              Meet Murphy.
-            </motion.h1>
-
-            <motion.p variants={fadeUp} className="text-[clamp(18px,2vw,24px)] font-semibold text-[#7b5cf6] mb-6 tracking-tight">
-              Man&apos;s best friend. Now at the console.
-            </motion.p>
-
-            <motion.p variants={fadeUp} className="text-lg text-[#8a8a9a] mb-3 leading-relaxed max-w-lg">
-              Murphy is your AI production companion — configuring your console, balancing your mix, and learning every venue it plays.
-            </motion.p>
-            <motion.p variants={fadeUp} className="text-sm font-medium text-[#f59e0b] mb-10">
-              Built on 400+ real shows. Always listening. Never complaining.
-            </motion.p>
-
-            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4">
-              <Link href="/contact" className="inline-flex items-center justify-center px-8 py-3.5 rounded-lg bg-[#7b5cf6] text-white font-semibold text-base hover:bg-[#6d4fe0] transition-colors shadow-[0_0_24px_rgba(123,92,246,0.40)]">
-                Hire Murphy →
-              </Link>
-              <Link href="/how-it-works" className="inline-flex items-center justify-center px-8 py-3.5 rounded-lg border border-white/20 text-[#f0f0f5] font-semibold text-base hover:bg-white/8 transition-colors">
-                See How It Works
-              </Link>
-            </motion.div>
-          </motion.div>
-
-          {/* Right — hardware photo */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="relative flex items-center justify-center"
-          >
-            <div className="absolute inset-0 rounded-3xl bg-[radial-gradient(ellipse_at_center,rgba(123,92,246,0.15)_0%,transparent_70%)] blur-2xl" />
-            <img
-              src="/murphy-hero.png"
-              alt="Murphy — AI production intelligence hardware on a mixing console"
-              className="relative z-10 w-full max-w-lg rounded-2xl object-cover shadow-[0_0_80px_rgba(123,92,246,0.25)]"
-            />
-          </motion.div>
+      {/* ── Cinematic Hero ── */}
+      <section className="relative min-h-screen flex items-end overflow-hidden">
+        {/* Full-bleed background image */}
+        <div className="absolute inset-0">
+          <img
+            src="/murphy-hero-bg.png"
+            alt="Murphy AI — engineer at the console"
+            className="w-full h-full object-cover object-center"
+          />
+          {/* Dark overlays for text legibility */}
+          <div className="absolute inset-0 bg-black/55" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0f]/70 via-transparent to-transparent" />
         </div>
+
+        {/* Content — bottom-left aligned */}
+        <motion.div
+          variants={stagger} initial="hidden" animate="visible"
+          className="relative z-10 max-w-7xl mx-auto w-full px-6 pb-20 pt-40"
+        >
+          <motion.div variants={fadeUp}>
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-white/10 text-white/80 border border-white/20 mb-6 tracking-widest uppercase backdrop-blur-sm">
+              World&apos;s First AI-Driven Front of House Engineer
+            </span>
+          </motion.div>
+
+          <motion.h1 variants={fadeUp} className="text-[clamp(52px,9vw,110px)] font-black leading-[0.95] tracking-[-0.04em] text-white mb-6 max-w-4xl">
+            Meet Murphy.
+          </motion.h1>
+
+          <motion.p variants={fadeUp} className="text-[clamp(18px,2vw,26px)] font-semibold text-[#c4b5fd] mb-4 max-w-xl">
+            Man&apos;s best friend. Now at the console.
+          </motion.p>
+
+          <motion.p variants={fadeUp} className="text-lg text-white/60 mb-10 max-w-lg leading-relaxed">
+            AI production intelligence that configures your console, balances your mix, and learns every venue it plays. Built on 400+ real shows.
+          </motion.p>
+
+          <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4">
+            <Link href="/contact" className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-[#7b5cf6] text-white font-bold text-base hover:bg-[#6d4fe0] transition-colors shadow-[0_0_30px_rgba(123,92,246,0.50)]">
+              Hire Murphy →
+            </Link>
+            <Link href="/how-it-works" className="inline-flex items-center justify-center px-8 py-4 rounded-lg border border-white/30 text-white font-semibold text-base hover:bg-white/10 transition-colors backdrop-blur-sm">
+              See How It Works
+            </Link>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* ── Stats strip ── */}
@@ -177,11 +170,13 @@ export default function Home() {
 
           <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }} className="grid md:grid-cols-2 gap-8 mb-8">
             {[
-              { tag: "On the Road", tagColor: "#7b5cf6", border: "rgba(123,92,246,0.4)", glowColor: "rgba(123,92,246,0.08)", name: "Murphy Bridge", platform: "Powered by Raspberry Pi", tagline: "The AI engineer in your gear bag.", body: "Portable production intelligence for engineers and touring acts who need AI-assisted mixing on every stage.", features: ["Full OSC console integration", "Real-time channel analysis", "Auto console configuration", "Show learning engine"], price: "From $999", btnBg: "#7b5cf6", btnText: "white" },
-              { tag: "In the House", tagColor: "#f59e0b", border: "rgba(245,158,11,0.4)", glowColor: "rgba(245,158,11,0.06)", name: "Murphy Pro", platform: "Powered by Mac Mini M4", tagline: "Production intelligence built for the big room.", body: "The full-power system — rack-ready, built for venues, touring productions, and engineers who demand the best.", features: ["Everything in Murphy Bridge", "Advanced monitor mixing", "Production analytics", "Full show history + venue database"], price: "From $1,499", btnBg: "#f59e0b", btnText: "#0a0a0f" },
-            ].map(({ tag, tagColor, border, glowColor, name, platform, tagline, body, features, price, btnBg, btnText }) => (
-              <motion.div key={name} variants={fadeUp} className="rounded-2xl p-10 border" style={{ borderColor: border, background: glowColor }}>
-                <p className="text-xs font-bold uppercase tracking-widest mb-6" style={{ color: tagColor }}>{tag}</p>
+              { tag: "On the Road", tagColor: "#7b5cf6", border: "rgba(123,92,246,0.4)", glowColor: "rgba(123,92,246,0.08)", name: "Murphy Bridge", img: "/murphy-bridge.png", platform: "Powered by Raspberry Pi", tagline: "The AI engineer in your gear bag.", body: "Portable production intelligence for engineers and touring acts who need AI-assisted mixing on every stage.", features: ["Full OSC console integration", "Real-time channel analysis", "Auto console configuration", "Show learning engine"], price: "From $999", btnBg: "#7b5cf6", btnText: "white" },
+              { tag: "In the House", tagColor: "#f59e0b", border: "rgba(245,158,11,0.4)", glowColor: "rgba(245,158,11,0.06)", name: "Murphy Pro", img: "/murphy-pro.png", platform: "Powered by Mac Mini M4", tagline: "Production intelligence built for the big room.", body: "The full-power system — rack-ready, built for venues, touring productions, and engineers who demand the best.", features: ["Everything in Murphy Bridge", "Advanced monitor mixing", "Production analytics", "Full show history + venue database"], price: "From $1,499", btnBg: "#f59e0b", btnText: "#0a0a0f" },
+            ].map(({ tag, tagColor, border, glowColor, name, img, platform, tagline, body, features, price, btnBg, btnText }) => (
+              <motion.div key={name} variants={fadeUp} className="rounded-2xl overflow-hidden border" style={{ borderColor: border, background: glowColor }}>
+                {img && <div className="w-full h-52 overflow-hidden"><img src={img} alt={name} className="w-full h-full object-cover object-center" /></div>}
+                <div className="p-10">
+                <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: tagColor }}>{tag}</p>
                 <h3 className="text-3xl font-black text-[#f0f0f5] mb-1">{name}</h3>
                 <p className="text-sm text-[#8a8a9a] mb-1">{platform}</p>
                 <p className="text-sm font-semibold mb-6" style={{ color: tagColor }}>{tagline}</p>
@@ -198,6 +193,7 @@ export default function Home() {
                 <Link href="/contact" className="w-full inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold text-sm transition-opacity hover:opacity-90" style={{ background: btnBg, color: btnText }}>
                   Join Waitlist →
                 </Link>
+                </div>
               </motion.div>
             ))}
           </motion.div>
