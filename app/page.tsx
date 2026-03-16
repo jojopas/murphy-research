@@ -40,7 +40,7 @@ export default function Home() {
         {/* Content — bottom-left aligned */}
         <motion.div
           variants={stagger} initial="hidden" animate="visible"
-          className="relative z-10 max-w-7xl mx-auto w-full px-6 pb-20 pt-24"
+          className="relative z-10 max-w-7xl mx-auto w-full px-6 pb-20 pt-[calc(6rem-26px)]"
         >
           <motion.div variants={fadeUp}>
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-white/10 text-white/80 border border-white/20 mb-6 tracking-widest uppercase backdrop-blur-sm">
