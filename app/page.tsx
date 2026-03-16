@@ -221,8 +221,8 @@ export default function Home() {
               { tag: "On the Road", tagColor: "#7b5cf6", border: "rgba(123,92,246,0.4)", glowColor: "rgba(123,92,246,0.08)", name: "Murphy Bridge", img: "/murphy-bridge.png", platform: "Powered by Raspberry Pi", tagline: "The AI engineer in your gear bag.", body: "Portable production intelligence for engineers and touring acts who need AI-assisted mixing on every stage.", features: ["Full OSC console integration", "Real-time channel analysis", "Auto console configuration", "Show learning engine"], price: "From $999", btnBg: "#7b5cf6", btnText: "white" },
               { tag: "In the House", tagColor: "#f59e0b", border: "rgba(245,158,11,0.4)", glowColor: "rgba(245,158,11,0.06)", name: "Murphy Pro", img: "/murphy-pro.png", platform: "Powered by Mac Mini M4", tagline: "Production intelligence built for the big room.", body: "The full-power system — rack-ready, built for venues, touring productions, and engineers who demand the best.", features: ["Everything in Murphy Bridge", "Advanced monitor mixing", "Production analytics", "Full show history + venue database"], price: "From $1,499", btnBg: "#f59e0b", btnText: "#0a0a0f" },
             ].map(({ tag, tagColor, border, glowColor, name, img, platform, tagline, body, features, price, btnBg, btnText }) => (
-              <motion.div key={name} variants={fadeUp} className="rounded-2xl overflow-hidden border" style={{ borderColor: border, background: glowColor }}>
-                {img && <div className="w-full h-52 overflow-hidden"><img src={img} alt={name} className="w-full h-full object-cover object-center" /></div>}
+              <motion.div key={name} variants={fadeUp} className="rounded-2xl overflow-hidden border relative" style={{ borderColor: border, background: glowColor }}>
+                {img && <div className="w-full h-52 overflow-hidden relative"><img src={img} alt={name} className="w-full h-full object-cover object-center" /><div className="absolute inset-0 bg-black/40 flex items-center justify-center"><span className="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-black/70 text-white border border-white/30 backdrop-blur-sm">Coming Soon</span></div></div>}
                 <div className="p-10">
                 <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: tagColor }}>{tag}</p>
                 <h3 className="text-3xl font-black text-[#f0f0f5] mb-1">{name}</h3>
@@ -238,8 +238,8 @@ export default function Home() {
                   ))}
                 </ul>
                 <p className="text-2xl font-black text-[#f0f0f5] mb-6">{price}</p>
-                <Link href="/contact" className="w-full inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold text-sm transition-opacity hover:opacity-90" style={{ background: btnBg, color: btnText }}>
-                  Join Waitlist →
+                <Link href="/contact" className="w-full inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold text-sm transition-opacity hover:opacity-90 border" style={{ background: "transparent", color: tagColor, borderColor: border }}>
+                  Notify Me When Available →
                 </Link>
                 </div>
               </motion.div>
