@@ -237,9 +237,9 @@ export default function Home() {
                     </li>
                   ))}
                 </ul>
-                <p className="text-2xl font-black text-[#f0f0f5] mb-6">{price}</p>
-                <Link href="/contact" className="w-full inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold text-sm transition-opacity hover:opacity-90 border" style={{ background: "transparent", color: tagColor, borderColor: border }}>
-                  Notify Me When Available →
+                <p className="text-xs font-black uppercase tracking-widest mb-6 px-3 py-1.5 inline-block rounded-full border" style={{ color: tagColor, borderColor: border }}>Coming Soon</p>
+                <Link href="/contact" className="w-full inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold text-sm transition-opacity hover:opacity-90" style={{ background: btnBg, color: btnText }}>
+                  Join Waitlist →
                 </Link>
                 </div>
               </motion.div>
