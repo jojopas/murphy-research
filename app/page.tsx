@@ -71,6 +71,54 @@ export default function Home() {
         </motion.div>
       </section>
 
+      {/* ── Two-column product intro ── */}
+      <section className="relative flex items-center px-6 py-24 overflow-hidden bg-[#0a0a0f]">
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_30%_40%,rgba(123,92,246,0.08)_0%,transparent_70%)]" />
+        <div className="relative z-10 max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left — copy */}
+          <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-60px" }}>
+            <motion.div variants={fadeUp}>
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-[#7b5cf6]/15 text-[#c4b5fd] border border-[#7b5cf6]/30 mb-6 tracking-wide uppercase">
+                AI Production Intelligence
+              </span>
+            </motion.div>
+            <motion.h2 variants={fadeUp} className="text-[clamp(36px,5vw,64px)] font-black leading-[1.01] tracking-[-0.04em] text-[#f0f0f5] mb-5">
+              Your Console.<br />Murphy&apos;s Brain.
+            </motion.h2>
+            <motion.p variants={fadeUp} className="text-lg text-[#8a8a9a] mb-3 leading-relaxed max-w-lg">
+              Murphy is your AI production companion — configuring your console, balancing your mix, and learning every venue it plays.
+            </motion.p>
+            <motion.p variants={fadeUp} className="text-sm font-medium text-[#f59e0b] mb-10">
+              Built on 400+ real shows. Always listening. Never complaining.
+            </motion.p>
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4">
+              <Link href="/contact" className="inline-flex items-center justify-center px-8 py-3.5 rounded-lg bg-[#7b5cf6] text-white font-semibold text-base hover:bg-[#6d4fe0] transition-colors shadow-[0_0_24px_rgba(123,92,246,0.40)]">
+                Hire Murphy →
+              </Link>
+              <Link href="/how-it-works" className="inline-flex items-center justify-center px-8 py-3.5 rounded-lg border border-white/20 text-[#f0f0f5] font-semibold text-base hover:bg-white/8 transition-colors">
+                See How It Works
+              </Link>
+            </motion.div>
+          </motion.div>
+
+          {/* Right — hardware photo */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="relative flex items-center justify-center"
+          >
+            <div className="absolute inset-0 rounded-3xl bg-[radial-gradient(ellipse_at_center,rgba(123,92,246,0.15)_0%,transparent_70%)] blur-2xl" />
+            <img
+              src="/murphy-hero.png"
+              alt="Murphy — AI production intelligence hardware on a mixing console"
+              className="relative z-10 w-full max-w-lg rounded-2xl object-cover shadow-[0_0_80px_rgba(123,92,246,0.25)]"
+            />
+          </motion.div>
+        </div>
+      </section>
+
       {/* ── Stats strip ── */}
       <section className="border-y border-white/10 py-16 px-6 bg-[#0f0f14]">
         <motion.div
