@@ -44,7 +44,7 @@ export default function Home() {
         >
           <motion.div variants={fadeUp}>
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-white/10 text-white/80 border border-white/20 mb-6 tracking-widest uppercase backdrop-blur-sm">
-              World&apos;s First AI-Driven Front of House Engineer
+              The World&apos;s First AI FOH Engineer
             </span>
           </motion.div>
 
