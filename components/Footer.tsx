@@ -26,7 +26,7 @@ export default function Footer() {
           </nav>
         </div>
         <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-[#8a8a9a] text-sm">
-          <span>&copy; {new Date().getFullYear()} Murphy Research LLC. All rights reserved.</span>
+          <span>&copy; {new Date().getFullYear()} Murphy Research LLC. All rights reserved. · Patent Pending — US App. 64/009,137</span>
           <a href="mailto:hello@murphyresearch.ai" className="hover:text-[#f0f0f5] transition-colors">hello@murphyresearch.ai</a>
         </div>
       </div>

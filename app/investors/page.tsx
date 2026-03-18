@@ -84,6 +84,19 @@ export default function Investors() {
         </div>
       </section>
 
+      {/* Patent Pending */}
+      <section className="py-12 px-6 border-t border-white/10 bg-[#0a0a0f]">
+        <div className="max-w-3xl mx-auto">
+          <div className="rounded-2xl p-6 border border-[#7b5cf6]/20 bg-[#7b5cf6]/5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <span className="text-2xl">🔒</span>
+            <div>
+              <p className="text-sm font-bold text-[#f0f0f5] mb-1">Intellectual Property Protected</p>
+              <p className="text-sm text-[#8a8a9a]">Patent Pending — US Application No. 64/009,137, filed March 18, 2026. Patent Center Reference: 74904159.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="py-24 px-6 text-center border-t border-white/10 bg-[#0f0f14]">
         <h2 className="text-4xl font-bold text-[#f0f0f5] mb-4">Request the Investor Deck</h2>
         <p className="text-[#8a8a9a] mb-10 max-w-xl mx-auto">Schedule a call with Joe or request the full deck to learn more about the opportunity.</p>
