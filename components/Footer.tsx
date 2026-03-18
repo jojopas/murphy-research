@@ -15,7 +15,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
           <div>
             <Link href="/">
-              <img src="/murphy-logo.jpg" alt="Murphy AI" className="h-8 w-auto object-contain mb-2" />
+              <div className="flex items-center gap-2 mb-2"><img src="/murphy-logo.jpg" alt="Murphy AI" className="h-8 w-auto object-contain" /><span className="font-bold text-lg tracking-tight text-[#f0f0f5]">Murphy</span></div>
             </Link>
             <p className="text-[#8a8a9a] text-sm">AI you can trust. Sound you can hear.</p>
           </div>

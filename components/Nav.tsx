@@ -18,8 +18,9 @@ export default function Nav() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/70 border-b border-white/10">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <Link href="/" className="flex-shrink-0">
-          <img src="/murphy-logo.jpg" alt="Murphy AI" className="h-8 w-auto object-contain" /><span className="ml-2 font-bold text-lg tracking-tight text-[#f0f0f5]">Murphy</span>
+        <Link href="/" className="flex-shrink-0 flex items-center gap-2">
+          <img src="/murphy-logo.jpg" alt="Murphy AI" className="h-8 w-auto object-contain" />
+          <span className="font-bold text-lg tracking-tight text-[#f0f0f5]">Murphy</span>
         </Link>
 
         <ul className="hidden lg:flex items-center gap-7 text-sm text-[#8a8a9a]">
