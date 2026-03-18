@@ -65,6 +65,17 @@ export default function Investors() {
             ))}
           </div>
           <p className="text-[#8a8a9a]">Current stage: Prototype built and real-world tested, waitlist in progress, engineer and venue outreach underway.</p>
+
+          {/* Patent */}
+          <div className="mt-10 rounded-2xl border border-[#7b5cf6]/30 bg-[#7b5cf6]/05 px-6 py-5 flex items-start gap-4">
+            <div className="w-8 h-8 rounded-lg bg-[#7b5cf6]/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-[#f0f0f5] mb-1">Intellectual Property</p>
+              <p className="text-sm text-[#8a8a9a]">Patent Pending — US Application No. <span className="text-[#c4b5fd] font-semibold">64/009,137</span>, filed March 18, 2026</p>
+            </div>
+          </div>
         </div>
       </section>
 
