@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Murphy — Infrastructure Architecture</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-deep: #0a0c10;
+    --bg-panel: #111318;
+    --bg-card: #161920;
+    --bg-card-hover: #1c1f28;
+    --border: #252830;
+    --border-bright: #353840;
+    --text-primary: #e8eaed;
+    --text-secondary: #8b8f98;
+    --text-dim: #5a5e68;
+    --green: #34d399;
+    --green-dim: #134e3a;
+    --green-glow: rgba(52, 211, 153, 0.12);
+    --amber: #fbbf24;
+    --amber-dim: #5c4a10;
+    --amber-glow: rgba(251, 191, 36, 0.10);
+    --red: #f87171;
+    --red-dim: #5c1a1a;
+    --red-glow: rgba(248, 113, 113, 0.10);
+    --blue: #60a5fa;
+    --blue-dim: #1e3a5f;
+    --blue-glow: rgba(96, 165, 250, 0.10);
+    --purple: #a78bfa;
+    --purple-dim: #3b2d6e;
+    --cyan: #22d3ee;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'DM Sans', -apple-system, sans-serif;
+  }
+
+  html { font-size: 14px; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: var(--sans);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; max-width: 1440px; margin: 0 auto; padding: 2rem 2.5rem 4rem; }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .header h1 {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 1.75rem;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--text-primary), var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .header .subtitle {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .date {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    gap: 2rem;
+    padding: 1rem 0 2rem;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+  .legend-dot.built { background: var(--green); box-shadow: 0 0 8px var(--green-glow); }
+  .legend-dot.planned { background: var(--amber); box-shadow: 0 0 8px var(--amber-glow); }
+  .legend-dot.gap { background: var(--red); box-shadow: 0 0 8px var(--red-glow); }
+  .legend-dot.sync { background: var(--blue); box-shadow: 0 0 8px var(--blue-glow); }
+
+  /* ── Tier Layout ── */
+  .tiers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .tier {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .tier-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .tier-header h2 {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .tier-tag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .tier-tag.live {
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid rgba(52, 211, 153, 0.25);
+  }
+  .tier-tag.planned-tag {
+    background: var(--amber-dim);
+    color: var(--amber);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+  }
+
+  .tier-body { padding: 1.25rem; }
+
+  /* ── Component Cards ── */
+  .component {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.75rem;
+    transition: background 0.15s, border-color 0.15s;
+    position: relative;
+  }
+  .component:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-bright);
+  }
+  .component:last-child { margin-bottom: 0; }
+
+  .component .status-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 6px 0 0 6px;
+  }
+  .component .status-bar.built { background: var(--green); }
+  .component .status-bar.planned { background: var(--amber); }
+  .component .status-bar.gap { background: var(--red); }
+
+  .component-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.35rem;
+  }
+  .component-header h3 {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .component-header .badge {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 2px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .badge.built-badge { background: var(--green-dim); color: var(--green); }
+  .badge.planned-badge { background: var(--amber-dim); color: var(--amber); }
+  .badge.gap-badge { background: var(--red-dim); color: var(--red); }
+
+  .component-detail {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    padding-left: 0.15rem;
+  }
+  .component-detail code {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    background: rgba(255,255,255,0.05);
+    padding: 0.1rem 0.35rem;
+    border-radius: 2px;
+    color: var(--text-primary);
+  }
+
+  .table-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 0.3rem;
+  }
+  .table-list li {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    padding: 0.15rem 0;
+    padding-left: 0.85rem;
+    position: relative;
+  }
+  .table-list li::before {
+    content: '├─';
+    position: absolute;
+    left: 0;
+    color: var(--text-dim);
+  }
+  .table-list li:last-child::before {
+    content: '└─';
+  }
+  .table-list li span.tbl {
+    color: var(--text-primary);
+  }
+
+  /* ── Sync Arrow Zone ── */
+  .sync-zone {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .sync-zone h2 {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 1rem;
+  }
+
+  .sync-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+  }
+
+  .sync-col {
+    flex: 1;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+  }
+  .sync-col:first-child { border-radius: 6px 0 0 6px; }
+  .sync-col:last-child { border-radius: 0 6px 6px 0; }
+
+  .sync-col h4 {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    color: var(--text-dim);
+  }
+  .sync-col.pull h4 { color: var(--cyan); }
+  .sync-col.push h4 { color: var(--purple); }
+  .sync-col.rules h4 { color: var(--amber); }
+
+  .sync-col ul {
+    list-style: none;
+    padding: 0;
+  }
+  .sync-col ul li {
+    padding: 0.25rem 0;
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+  }
+  .sync-col ul li::before {
+    content: '→ ';
+    color: var(--text-dim);
+  }
+
+  .sync-arrow-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .sync-arrow-center .pipe {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--blue);
+    text-align: center;
+    letter-spacing: 0.04em;
+    padding: 0.15rem 0.5rem;
+    background: var(--blue-dim);
+    border-radius: 3px;
+    border: 1px solid rgba(96, 165, 250, 0.2);
+  }
+  .arrow-down, .arrow-up {
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+  .arrow-down { color: var(--cyan); }
+  .arrow-up { color: var(--purple); margin-top: 0.25rem; }
+
+  /* ── Auth Panel ── */
+  .auth-panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+  .auth-panel-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .auth-panel-header:hover { background: var(--bg-card); }
+  .auth-panel-header h2 {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--amber);
+  }
+  .auth-panel-header .expand-hint {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    margin-left: auto;
+    transition: transform 0.3s;
+  }
+  .auth-panel-header .expand-hint.open { transform: rotate(90deg); }
+
+  .auth-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+  .auth-body.open {
+    max-height: 2000px;
+  }
+  .auth-body-inner {
+    padding: 1.5rem;
+  }
+
+  /* Auth flow steps */
+  .auth-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+  .auth-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    position: relative;
+    padding: 0.75rem 0;
+  }
+  .auth-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 2.4rem;
+    bottom: -0.15rem;
+    width: 1px;
+    background: var(--border-bright);
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+  }
+  .step-num.planned-step {
+    background: var(--amber-dim);
+    color: var(--amber);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+  }
+  .step-num.built-step {
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid rgba(52, 211, 153, 0.3);
+  }
+  .step-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .step-content h4 {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.2rem;
+  }
+  .step-content p {
+    font-size: 0.73rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+  .step-content p code {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    background: rgba(255,255,255,0.05);
+    padding: 0.1rem 0.35rem;
+    border-radius: 2px;
+    color: var(--text-primary);
+  }
+
+  /* Auth roles table */
+  .roles-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    margin-top: 0.5rem;
+  }
+  .roles-table th {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border-bright);
+    color: var(--text-dim);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+  }
+  .roles-table td {
+    padding: 0.45rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+  .roles-table td:first-child { color: var(--text-primary); font-weight: 500; }
+  .roles-table .check { color: var(--green); }
+  .roles-table .x { color: var(--red-dim); }
+
+  /* Channel identity diagram */
+  .identity-map {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+  }
+  .identity-map h4 {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--blue);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .identity-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.3rem 0;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+  }
+  .identity-user {
+    min-width: 90px;
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+  .identity-arrow { color: var(--text-dim); }
+  .identity-platform {
+    padding: 0.15rem 0.45rem;
+    border-radius: 2px;
+    font-size: 0.65rem;
+    font-weight: 500;
+  }
+  .identity-platform.discord { background: #3b3580; color: #8b8ff8; }
+  .identity-platform.whatsapp { background: #1a3a2a; color: #4ade80; }
+  .identity-platform.telegram { background: #1a3050; color: #60a5fa; }
+  .identity-platform.imessage { background: #1a3a2a; color: #34d399; }
+  .identity-platform.slack { background: #3a2a1a; color: #fbbf24; }
+
+  /* ── Flywheel ── */
+  .flywheel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .flywheel h2 {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 1.25rem;
+  }
+  .flywheel-steps {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+  }
+  .fw-step {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    position: relative;
+  }
+  .fw-step .fw-sub {
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    font-weight: 400;
+    display: block;
+    margin-top: 0.15rem;
+  }
+  .fw-arrow {
+    font-family: var(--mono);
+    font-size: 1rem;
+    color: var(--text-dim);
+    padding: 0 0.5rem;
+  }
+  .fw-step.field { border-left: 2px solid var(--green); }
+  .fw-step.sync-step { border-left: 2px solid var(--blue); }
+  .fw-step.mothership-step { border-left: 2px solid var(--purple); }
+  .fw-loop-arrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--purple);
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .fw-loop-arrow .loop-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--purple), transparent);
+  }
+
+  /* ── Critical Gaps ── */
+  .gaps {
+    background: var(--bg-panel);
+    border: 1px solid var(--red-dim);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .gaps h2 {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 1rem;
+  }
+  .gap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 0.75rem;
+  }
+  .gap-card {
+    background: var(--bg-card);
+    border: 1px solid var(--red-dim);
+    border-left: 3px solid var(--red);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+  }
+  .gap-card h4 {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--red);
+    margin-bottom: 0.2rem;
+  }
+  .gap-card p {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ── Section labels ── */
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 0.75rem;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .tiers { grid-template-columns: 1fr; }
+    .sync-flow { flex-direction: column; }
+    .sync-col:first-child { border-radius: 6px 6px 0 0; }
+    .sync-col:last-child { border-radius: 0 0 6px 6px; }
+    .sync-arrow-center {
+      min-width: auto;
+      flex-direction: row;
+      padding: 0.5rem;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-top: none;
+      border-bottom: none;
+    }
+    .flywheel-steps { flex-direction: column; align-items: stretch; }
+    .fw-arrow { transform: rotate(90deg); text-align: center; }
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-in {
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+  }
+  .delay-1 { animation-delay: 0.05s; }
+  .delay-2 { animation-delay: 0.1s; }
+  .delay-3 { animation-delay: 0.15s; }
+  .delay-4 { animation-delay: 0.2s; }
+  .delay-5 { animation-delay: 0.25s; }
+  .delay-6 { animation-delay: 0.3s; }
+  .delay-7 { animation-delay: 0.35s; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header animate-in">
+    <h1>Murphy</h1>
+    <span class="subtitle">Infrastructure Architecture</span>
+    <span class="date">2026-03-26 &mdash; console-bridge &middot; Updated 2026-03-26</span>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend animate-in delay-1">
+    <div class="legend-item"><div class="legend-dot built"></div> Built &amp; Working</div>
+    <div class="legend-item"><div class="legend-dot planned"></div> Planned &mdash; Not Built</div>
+    <div class="legend-item"><div class="legend-dot gap"></div> Critical Gap</div>
+    <div class="legend-item"><div class="legend-dot sync"></div> Sync / Data Flow</div>
+  </div>
+
+  <!-- Two Tiers -->
+  <div class="tiers animate-in delay-2">
+
+    <!-- TIER 1: Field Unit -->
+    <div class="tier">
+      <div class="tier-header">
+        <h2>Tier 1 &mdash; Field Unit</h2>
+        <span class="tier-tag live">Pi / Mac Mini</span>
+      </div>
+      <div class="tier-body">
+
+        <div class="component">
+          <div class="status-bar built"></div>
+          <div class="component-header">
+            <h3>FastAPI Backend</h3>
+            <span class="badge built-badge">BUILT</span>
+            <span class="badge built-badge">AUTH</span>
+          </div>
+          <div class="component-detail">
+            14 route modules &mdash; shows, channels, OSC, chat, uploads, settings, training, bands, venues, members, gear, <strong>auth, consoles, system, sync</strong>. All endpoints protected with role-based access. JWT validation via <code>get_current_user</code>, <code>require_engineer</code>, <code>require_admin</code> dependencies. Dev mode bypass (default). <code>:8000</code>.
+          </div>
+        </div>
+
+        <div class="component">
+          <div class="status-bar built"></div>
+          <div class="component-header">
+            <h3>SQLite</h3>
+            <span class="badge built-badge">BUILT</span>
+          </div>
+          <div class="component-detail">
+            Field unit's authoritative store. Show-time data never blocks on network.
+            <ul class="table-list">
+              <li><span class="tbl">shows</span> &middot; channels &middot; buses &middot; bus_sends</li>
+              <li><span class="tbl">overrides</span> &middot; training_pairs &middot; gemma_training</li>
+              <li><span class="tbl">venues</span> &middot; bands &middot; band_members &middot; gear</li>
+              <li><span class="tbl">parameters</span> &middot; settings &middot; snapshots</li>
+              <li><span class="tbl">users_cache</span> &middot; user_preferences_cache &middot; <strong>consoles</strong></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="component">
+          <div class="status-bar built"></div>
+          <div class="component-header">
+            <h3>LanceDB &mdash; Local RAG</h3>
+            <span class="badge built-badge">BUILT</span>
+          </div>
+          <div class="component-detail">
+            ~10K chunks &middot; file-based vector store at <code>~/.murphy/rag/db/</code><br>
+            <code>nomic-embed-text</code> via Ollama &middot; 768-dim &middot; air-gap safe<br>
+            Table: <code>gig_memory</code> &mdash; semantic search over past situations &amp; decisions
+          </div>
+        </div>
+
+        <div class="component">
+          <div class="status-bar built"></div>
+          <div class="component-header">
+            <h3>OSC Bridge &rarr; X32</h3>
+            <span class="badge built-badge">BUILT</span>
+          </div>
+          <div class="component-detail">
+            Real-time mixer control. Faders, EQ, compression, gates, monitor sends. Undo via inverse commands. Snapshot save/restore. <strong>Auto-normalization pipeline</strong> &mdash; LLM outputs human-readable values (dB, Hz, ms), backend converts to X32 0.0&ndash;1.0 via <code>normalize_osc_command()</code>. Correct OSC type tags (int vs float). Phantom power via <code>/headamp/NNN/phantom</code>. Descriptive vocabulary mapping (attack/release feel, EQ width, gain reduction outcomes).
+          </div>
+        </div>
+
+        <div class="component">
+          <div class="status-bar built"></div>
+          <div class="component-header">
+            <h3>Murphy UI (React)</h3>
+            <span class="badge built-badge">BUILT</span>
+            <span class="badge built-badge">AUTH</span>
+          </div>
+          <div class="component-detail">
+            SPA served from FastAPI static. Auth gate with QR scan + manual token pairing. WiFi config panel (scan, connect, status). 5 tabs: Chat, Show, Channels, Settings, Export. iPad-first, dark theme, shadcn/ui.
+          </div>
+        </div>
+
+        <div class="component">
+          <div class="status-bar built"></div>
+          <div class="component-header">
+            <h3>Console Abstraction</h3>
+            <span class="badge built-badge">BUILT</span>
+          </div>
+          <div class="component-detail">
+            Multi-mixer support via <code>consoles</code> table. Known drivers: <code>x32</code> (OSC), <code>x-air</code> (OSC), <code>allen-heath</code> (TCP/MIDI). Shows linked to consoles via <code>console_id</code>. X32 seeded as console #1.
+          </div>
+        </div>
+
+        <div class="component">
+          <div class="status-bar built"></div>
+          <div class="component-header">
+            <h3>WiFi Config API</h3>
+            <span class="badge built-badge">BUILT</span>
+          </div>
+          <div class="component-detail">
+            Headless WiFi management for field unit. <code>/api/system/wifi/scan</code>, <code>/connect</code>, <code>/status</code>. macOS + Linux support. Shows Tailscale status. Admin-only &mdash; configured from iPad on LAN.
+          </div>
+        </div>
+
+        <div class="component">
+          <div class="status-bar built"></div>
+          <div class="component-header">
+            <h3>OpenClaw Device Auth</h3>
+            <span class="badge built-badge">BUILT</span>
+          </div>
+          <div class="component-detail">
+            Ed25519 keypair at <code>~/.murphy/device-identity.json</code>. Machine-to-machine only &mdash; signs payloads with nonce + timestamp. <strong>Not user auth.</strong>
+          </div>
+        </div>
+
+        <div class="component">
+          <div class="status-bar built"></div>
+          <div class="component-header">
+            <h3>users_cache + JWT Auth</h3>
+            <span class="badge built-badge">BUILT</span>
+          </div>
+          <div class="component-detail">
+            Local JWT token cache. Validates Supabase-issued JWTs via HMAC-SHA256 signature check &mdash; <strong>no network call mid-show</strong>. First-seen users auto-cached from JWT claims. JWT secret stored in settings table.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TIER 2: Mothership -->
+    <div class="tier">
+      <div class="tier-header">
+        <h2>Tier 2 &mdash; Mothership</h2>
+        <span class="tier-tag live">Supabase Pro &mdash; DEPLOYED</span>
+      </div>
+      <div class="tier-body">
+
+        <div class="component">
+          <div class="status-bar built"></div>
+          <div class="component-header">
+            <h3>Supabase Auth</h3>
+            <span class="badge built-badge">DEPLOYED</span>
+          </div>
+          <div class="component-detail">
+            Issues JWT tokens (HS256). User signup/login on <code>murphy-research-ai.vercel.app</code>. Tokens validated on field units via JWT secret &mdash; air-gap safe. Single source of truth for identity. Auto-create user trigger on <code>auth.users</code>.
+          </div>
+        </div>
+
+        <div class="component">
+          <div class="status-bar built"></div>
+          <div class="component-header">
+            <h3>Murphy Website</h3>
+            <span class="badge built-badge">DEPLOYED</span>
+          </div>
+          <div class="component-detail">
+            Next.js on Vercel. Signup + login pages, dashboard with JWT token display + QR code for iPad pairing. User signs up on website &rarr; gets token &rarr; scans QR on Murphy UI at FOH.
+          </div>
+        </div>
+
+        <div class="component">
+          <div class="status-bar built"></div>
+          <div class="component-header">
+            <h3>Supabase PostgreSQL</h3>
+            <span class="badge built-badge">DEPLOYED</span>
+          </div>
+          <div class="component-detail">
+            Project <code>lzpkbiagfbkvzzjkalre</code> &mdash; Pro plan, IPv4 enabled. 17 tables with RLS policies active.
+            <ul class="table-list">
+              <li><span class="tbl">users</span> &middot; user_preferences &middot; channel_identities</li>
+              <li><span class="tbl">units</span> &middot; bands &middot; venues &middot; gear &middot; consoles</li>
+              <li><span class="tbl">shows</span> &middot; corrections &middot; gig_corrections</li>
+              <li><span class="tbl">training_pairs</span> &mdash; curated Q&amp;A for fine-tuning (synced from field)</li>
+              <li><span class="tbl">model_registry</span> &middot; sync_log</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="component">
+          <div class="status-bar built"></div>
+          <div class="component-header">
+            <h3>pgvector Extension</h3>
+            <span class="badge built-badge">DEPLOYED</span>
+          </div>
+          <div class="component-detail">
+            768-dim (<code>nomic-embed-text</code>). IVFFlat indexes. Semantic search functions deployed.
+            <ul class="table-list">
+              <li><span class="tbl">gear_embeddings</span> &mdash; <code>search_gear()</code></li>
+              <li><span class="tbl">venue_embeddings</span> &mdash; acoustic profiles</li>
+              <li><span class="tbl">training_embeddings</span> &mdash; approved Q&amp;A pairs</li>
+              <li><span class="tbl">gig_memory_embeddings</span> &mdash; <code>search_gig_memory()</code></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="component">
+          <div class="status-bar built"></div>
+          <div class="component-header">
+            <h3>Training Pipeline</h3>
+            <span class="badge built-badge">BUILT</span>
+          </div>
+          <div class="component-detail">
+            Daily Gemma training on Mac Studio (teacher: Claude Sonnet &rarr; student: Gemma via Unsloth LoRA). 313+ pairs in DB. Mothership pipeline: grade &rarr; sync &rarr; export &rarr; train &rarr; push weights. Neo bot (Discord) captures live Q&amp;A pairs passively + interactive training via <code>#neo-training</code> channel.
+          </div>
+        </div>
+
+        <div class="component">
+          <div class="status-bar built"></div>
+          <div class="component-header">
+            <h3>Sync Orchestrator</h3>
+            <span class="badge built-badge">BUILT</span>
+          </div>
+          <div class="component-detail">
+            Training pair sync (#55 &mdash; closed): field SQLite &rarr; Supabase <code>training_pairs</code> table. Service role key, batched upsert, <code>synced_at</code> tracking. LaunchAgent on Mini 2 runs every 30 min (9am&ndash;11pm). API: <code>POST /api/sync/training</code>. 313 rows verified synced.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH FLOW — Expanded Detail -->
+  <div class="auth-panel animate-in delay-3">
+    <div class="auth-panel-header" onclick="toggleAuth()">
+      <h2>Auth Architecture &mdash; How It Works</h2>
+      <span class="expand-hint open" id="auth-arrow">&#9654;</span>
+    </div>
+    <div class="auth-body open" id="auth-body">
+      <div class="auth-body-inner">
+
+        <p class="section-label">Authentication Flow (6 Steps)</p>
+
+        <div class="auth-flow">
+
+          <div class="auth-step">
+            <div class="step-num built-step">1</div>
+            <div class="step-content">
+              <h4>Supabase Auth Issues JWT</h4>
+              <p>User signs up at <code>murphy-research-ai.vercel.app</code> (email/password). Supabase returns a <strong>signed JWT</strong> (HS256) containing <code>user_id</code>, <code>email</code>, and an expiry. User sees their token + QR code on the dashboard page.</p>
+            </div>
+          </div>
+
+          <div class="auth-step">
+            <div class="step-num built-step">2</div>
+            <div class="step-content">
+              <h4>Token Paired to Field Unit</h4>
+              <p>User opens Murphy UI on iPad at FOH (<code>http://192.168.1.50:8000</code>). Auth gate shows pairing screen &mdash; scan QR code or paste token manually. Token stored in <code>localStorage</code> and sent as <code>Authorization: Bearer</code> on all API calls.</p>
+            </div>
+          </div>
+
+          <div class="auth-step">
+            <div class="step-num built-step">3</div>
+            <div class="step-content">
+              <h4>Local JWT Validation (Air-Gap Safe)</h4>
+              <p>Field unit validates JWTs <strong>locally via HMAC-SHA256 signature check</strong>. No network call. JWT secret from Supabase stored in settings table. Verifies: (1) signature valid, (2) not expired, (3) <code>sub</code> claim present. <strong>Works fully air-gapped during shows.</strong></p>
+            </div>
+          </div>
+
+          <div class="auth-step">
+            <div class="step-num built-step">4</div>
+            <div class="step-content">
+              <h4>FastAPI Dependencies Check JWT + Role</h4>
+              <p>All 74 endpoints protected via <code>get_current_user</code>, <code>require_engineer</code>, <code>require_admin</code> FastAPI dependencies. First-seen users auto-cached in <code>users_cache</code> with default <code>viewer</code> role. Dev mode bypass available (<code>auth_mode=dev</code>).</p>
+            </div>
+          </div>
+
+          <div class="auth-step">
+            <div class="step-num built-step">5</div>
+            <div class="step-content">
+              <h4>Role-Based Access Control</h4>
+              <p>Three roles: <strong>admin</strong> (full access + settings + WiFi), <strong>engineer</strong> (mixing + OSC + channels), <strong>viewer</strong> (read-only + chat). Admin can promote users via <code>/api/auth/users/{id}/role</code>.</p>
+            </div>
+          </div>
+
+          <div class="auth-step">
+            <div class="step-num planned-step">6</div>
+            <div class="step-content">
+              <h4>Channel Identity Linking</h4>
+              <p>The <code>channel_identities</code> table (deployed on Supabase) maps a single <code>user_id</code> to multiple platform accounts. Table exists but linking logic not yet built. When complete, Tommy on Discord and Tommy on WhatsApp resolve to the same engineer profile.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Roles Table -->
+        <p class="section-label" style="margin-top: 1rem;">Role Permissions Matrix</p>
+        <table class="roles-table">
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th>View Shows</th>
+              <th>Chat / Ask</th>
+              <th>Send OSC</th>
+              <th>Edit Channels</th>
+              <th>Approve Training</th>
+              <th>Settings</th>
+              <th>Fleet Mgmt</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>admin</td>
+              <td class="check">&#10003;</td>
+              <td class="check">&#10003;</td>
+              <td class="check">&#10003;</td>
+              <td class="check">&#10003;</td>
+              <td class="check">&#10003;</td>
+              <td class="check">&#10003;</td>
+              <td class="check">&#10003;</td>
+            </tr>
+            <tr>
+              <td>engineer</td>
+              <td class="check">&#10003;</td>
+              <td class="check">&#10003;</td>
+              <td class="check">&#10003;</td>
+              <td class="check">&#10003;</td>
+              <td class="x">&times;</td>
+              <td class="x">&times;</td>
+              <td class="x">&times;</td>
+            </tr>
+            <tr>
+              <td>viewer</td>
+              <td class="check">&#10003;</td>
+              <td class="check">&#10003;</td>
+              <td class="x">&times;</td>
+              <td class="x">&times;</td>
+              <td class="x">&times;</td>
+              <td class="x">&times;</td>
+              <td class="x">&times;</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.5rem; font-family: var(--mono);">
+          admin = Joe &nbsp;&middot;&nbsp; engineer = Tommy, guest FOH &nbsp;&middot;&nbsp; viewer = band members
+        </p>
+
+        <!-- Channel Identity Map -->
+        <div class="identity-map">
+          <h4>Channel Identity Resolution</h4>
+          <div class="identity-row">
+            <span class="identity-user">Tommy</span>
+            <span class="identity-arrow">&rarr;</span>
+            <span class="identity-platform discord">Discord</span>
+            <span class="identity-platform whatsapp">WhatsApp</span>
+            <span class="identity-platform telegram">Telegram</span>
+          </div>
+          <div class="identity-row">
+            <span class="identity-user">Joe</span>
+            <span class="identity-arrow">&rarr;</span>
+            <span class="identity-platform discord">Discord</span>
+            <span class="identity-platform imessage">iMessage</span>
+            <span class="identity-platform slack">Slack</span>
+          </div>
+          <div class="identity-row">
+            <span class="identity-user">Guest FOH</span>
+            <span class="identity-arrow">&rarr;</span>
+            <span class="identity-platform whatsapp">WhatsApp</span>
+          </div>
+          <div style="margin-top: 0.6rem; font-size: 0.68rem; color: var(--text-dim); font-family: var(--mono);">
+            One user_id &rarr; many platform accounts via <code>channel_identities</code> table.<br>
+            Corrections from any platform accumulate under the same engineer profile.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Sync Protocol -->
+  <div class="sync-zone animate-in delay-4">
+    <h2>Sync Protocol &mdash; Tailscale (Between Shows Only)</h2>
+    <div class="sync-flow">
+      <div class="sync-col pull">
+        <h4>&darr; Pull First (Mothership &rarr; Field)</h4>
+        <ul>
+          <li>JWT refresh + public key rotation</li>
+          <li>Updated venue profile for upcoming show</li>
+          <li>Latest model weights (if new version)</li>
+          <li>Gear subset for current band</li>
+          <li>LanceDB vector subset (active context)</li>
+        </ul>
+      </div>
+      <div class="sync-arrow-center">
+        <span class="arrow-down">&darr;</span>
+        <span class="pipe">TAILSCALE</span>
+        <span class="arrow-up">&uarr;</span>
+      </div>
+      <div class="sync-col push">
+        <h4>&uarr; Then Push (Field &rarr; Mothership)</h4>
+        <ul>
+          <li>Override queue (raw corrections)</li>
+          <li>Training pairs generated since last sync</li>
+          <li>Completed show metadata</li>
+          <li>Correction signals (gig_corrections)</li>
+          <li>Sync log entry (entity_type, count, timestamps)</li>
+        </ul>
+      </div>
+      <div class="sync-col rules">
+        <h4>Ownership Rules</h4>
+        <ul>
+          <li>Field unit owns show-time data</li>
+          <li>Mothership owns identity + catalog</li>
+          <li>Catalog changes only flow between shows</li>
+          <li>Conflict: most-recent timestamp wins</li>
+          <li>Never blocks during a live show</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Training Flywheel -->
+  <div class="flywheel animate-in delay-5">
+    <h2>Training Flywheel</h2>
+    <div class="flywheel-steps">
+      <div class="fw-step field">Live Show<span class="fw-sub">corrections captured</span></div>
+      <span class="fw-arrow">&rarr;</span>
+      <div class="fw-step sync-step">Sync Up<span class="fw-sub">Supabase &middot; every 30 min</span></div>
+      <span class="fw-arrow">&rarr;</span>
+      <div class="fw-step mothership-step">Mothership Grades<span class="fw-sub">pending &rarr; approved | rejected</span></div>
+      <span class="fw-arrow">&rarr;</span>
+      <div class="fw-step mothership-step">Fine-Tune<span class="fw-sub">QLoRA &middot; Gemma 2 27B</span></div>
+      <span class="fw-arrow">&rarr;</span>
+      <div class="fw-step sync-step">Weights Push<span class="fw-sub">OTA via model_registry</span></div>
+      <span class="fw-arrow">&rarr;</span>
+      <div class="fw-step field">All Units Smarter<span class="fw-sub">loop repeats</span></div>
+    </div>
+    <div class="fw-loop-arrow">
+      <span class="loop-line"></span>
+      &#8634; continuous improvement cycle
+      <span class="loop-line"></span>
+    </div>
+  </div>
+
+  <!-- Remaining Gaps -->
+  <div class="gaps animate-in delay-6">
+    <h2>Remaining Gaps</h2>
+    <div class="gap-grid">
+      <div class="gap-card">
+        <h4>Voice Pipeline (#28)</h4>
+        <p>Talkback mic &rarr; Whisper &rarr; Murphy &rarr; Kokoro TTS &rarr; IEM. Hands-free FOH interaction during live shows.</p>
+      </div>
+      <div class="gap-card">
+        <h4>Real-Time Metering (#46)</h4>
+        <p>X32 <code>/meters</code> subscription for live spectral data. Foundation for acoustic intelligence and auto-gain.</p>
+      </div>
+      <div class="gap-card">
+        <h4>No Audit Logging</h4>
+        <p>No record of who made a correction, when, or from where. Critical for training data provenance.</p>
+      </div>
+      <div class="gap-card">
+        <h4>No Rate Limiting</h4>
+        <p>API is open to abuse. OSC commands could flood the X32 if hit rapidly.</p>
+      </div>
+      <div class="gap-card">
+        <h4>Auth UI &mdash; Production Flip</h4>
+        <p>Auth infrastructure built but running in dev mode. Need first real user signup, then flip <code>auth_mode=production</code> in settings.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="animate-in delay-7" style="text-align: center; padding-top: 1rem; border-top: 1px solid var(--border);">
+    <p style="font-family: var(--mono); font-size: 0.65rem; color: var(--text-dim); letter-spacing: 0.08em;">
+      MURPHY &mdash; AI FOH MIXING AGENT &mdash; OWNER: JOE PASCUAL &mdash; CONFIDENTIAL
+    </p>
+  </div>
+
+</div>
+
+<script>
+  function toggleAuth() {
+    const body = document.getElementById('auth-body');
+    const arrow = document.getElementById('auth-arrow');
+    body.classList.toggle('open');
+    arrow.classList.toggle('open');
+  }
+</script>
+</body>
+</html>
